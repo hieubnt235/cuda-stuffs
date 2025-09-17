@@ -1,0 +1,28 @@
+function(list_cmake_variables)
+    message(STATUS "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    message(STATUS "   🔧 Dumping CMake Variables (DEBUG MODE)     ")
+    message(STATUS "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    get_cmake_property(variable_names VARIABLES)
+    foreach(variable_name ${variable_names})
+        if (NOT "${${variable_name}}" STREQUAL "")
+            message(STATUS "${variable_name}=${${variable_name}}")
+        endif()
+    endforeach()
+    message(STATUS "~~~~~~~~ Dumping CMake Variables (Done) ~~~~~~~~")
+
+endfunction()
+
+function(list_all_cuda_targets)
+    set(cuda_targets_list)
+    get_property(_targets DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY IMPORTED_TARGETS)
+
+    # Loop over targets and append CUDA targets to the list
+    foreach(t ${_targets})
+        if(t MATCHES "^CUDA::")
+            string(REGEX REPLACE "^CUDA::" "" target_name ${t})
+            list(APPEND cuda_targets_list ${target_name})
+        endif()
+    endforeach()
+    string(JOIN " | " cuda_targets_str ${cuda_targets_list})
+    message(STATUS ">>> ${cuda_targets_str}")
+endfunction()
